@@ -8,31 +8,59 @@ namespace Caculator.classes
 {
     public class MyCalculator
     {
-        private Queue<Expression> __queue = new Queue<Expression>();
-        public Expression currentExpression;
+        private Queue<Expression> __expressionQueue = new Queue<Expression>();
+        private Expression __topExpression = new Expression();
+        private Expression __currentSubExpression = new Expression();
+        private Expression __currentExpression = new Expression();
+
+        public double? currentResult;
         public string currentOperandStr = "";
-        public string currentExpressionStr = "";
 
-        public void addExpression(string a = "0", string b = "0", string o = "+")
+        static private void __buildExpression(ref Expression e, string s)
         {
-            __queue.Enqueue(new Expression(a, b, o));
+            if (String.IsNullOrEmpty(s)) s = "0";
+
+            // Set operator
+            if (ArithmeticOperator.IsValid(s))
+            {
+                e.setOperator(s);
+            }
+            else
+            {
+                e.setOperand(s);
+            }
         }
 
-        public void addExpression(Expression exp)
+        public void buildCurrentExpression(string s)
         {
-            __queue.Enqueue(exp);
+            if (currentResult != null) __currentExpression.setOperandA((double)currentResult);
+            else MyCalculator.__buildExpression(ref __currentExpression, s);
         }
 
-        public double getResult()
+        public string getCurrentExpressionStr()
         {
-            Expression exp = __queue.Dequeue();
-            return exp.getResult();
+            return __currentExpression.getExpressionStr();
         }
 
-        public double getResults()
+        public double getCurrentExpressionResult()
         {
-            double result = 0;
-            return result;
+            return __currentExpression.getResult();
+        }
+
+        public void buildTopExpression(string s)
+        {
+            MyCalculator.__buildExpression(ref __topExpression, s);
+        }
+
+        public void buildSubExpression(string s)
+        {
+            MyCalculator.__buildExpression(ref __currentSubExpression, s);
+        }
+
+        public void resetCurrentExpression()
+        {
+            currentResult = null;
+            __currentExpression = new Expression();
         }
     }
 }

@@ -6,79 +6,150 @@ using System.Threading.Tasks;
 
 namespace Caculator.classes
 {
-    public class Expression
+    public static class ArithmeticOperator
     {
-        private double __operandA;
-        private double __operandB = 0;
-        private string __operator = "";
-
-        // Static properties
         public const string AdditionOperator = "+";
         public const string SubtractionOperator = "-";
         public const string MultiplicationOperator = "x";
         public const string DivisionOperator = "/";
         public const string ModOperator = "%";
 
-        public Expression(string a = "0", string b = "0", string o = "+")
-        {
-            __operandA = double.Parse(a);
-            __operandB = double.Parse(b == "" ? a : b);
-            __operator = o;
-        }
-
-        public void setOperandA(double a) { __operandA = a; }
-        public void setOperandA(string a) { __operandA = double.Parse(a); }
-        public void setOperandB(double b) { __operandB = b; }
-        public void setOperandB(string b) { __operandB = double.Parse(b); }
-        public void setOperator(string o) { __operator = o; }
-        public void setOperand(string n)
-        {
-            double.chec
-        }
-
-        public double getResult()
-        {
-            switch (__operator)
-            {
-                case Expression.SubtractionOperator:
-                    {
-                        return __operandA - __operandA;
-                    }
-                case Expression.MultiplicationOperator:
-                    {
-                        return __operandA * __operandA;
-                    }
-                case Expression.DivisionOperator:
-                    {
-                        return __operandA / __operandA;
-                    }
-                case Expression.ModOperator:
-                    {
-                        return __operandA % __operandA;
-                    }
-                case Expression.AdditionOperator:
-                default:
-                    {
-                        return __operandA + __operandA;
-                    }
-            };
-        }
-
-        // Static methods
-        static public bool IsValidOperator(string c)
+        static public bool IsValid(string c)
         {
             switch (c)
             {
-                case Expression.AdditionOperator:
-                case Expression.SubtractionOperator:
-                case Expression.MultiplicationOperator:
-                case Expression.DivisionOperator:
-                case Expression.ModOperator:
+                case ArithmeticOperator.AdditionOperator:
+                case ArithmeticOperator.SubtractionOperator:
+                case ArithmeticOperator.MultiplicationOperator:
+                case ArithmeticOperator.DivisionOperator:
+                case ArithmeticOperator.ModOperator:
                     {
                         return true;
                     }
                 default:
                     return false;
+            };
+        }
+
+        static public bool IsMorePrecedence(string c)
+        {
+            switch (c)
+            {
+                case ArithmeticOperator.MultiplicationOperator:
+                case ArithmeticOperator.DivisionOperator:
+                case ArithmeticOperator.ModOperator:
+                    {
+                        return true;
+                    }
+                default:
+                    return false;
+            };
+        }
+    }
+
+    public class Expression
+    {
+        private double? __operandA;
+        private double? __operandB;
+
+        private Expression? __subExpressionA;
+        private Expression? __subExpressionB;
+
+        private string __operator = "";
+
+        public void setOperand(double a)
+        {
+            if(__operator == "") setOperandA(a);
+            else setOperandB(a);
+        }
+        public void setOperand(string a)
+        {
+            if (__operator == "") setOperandA(a);
+            else setOperandB(a);
+        }
+        public void setOperandA(double a)
+        {
+            __operandA = a;
+            if(__subExpressionA != null) __subExpressionA = null;
+            // __operandB ??= __operandA;
+        }
+        public void setOperandB(double b)
+        {
+            __operandB = b;
+            if (__subExpressionB != null)  __subExpressionB = null;
+            // __operandA ??= __operandB;
+        }
+        public void setOperandA(string a)
+        {
+            __operandA = double.Parse(a);
+            if (__subExpressionA != null)  __subExpressionA = null;
+            // __operandB ??= __operandA;
+        }
+        public void setOperandB(string b)
+        {
+            __operandB = double.Parse(b);
+            if (__subExpressionB != null) __subExpressionB = null;
+            // __operandA ??= __operandB;
+        }
+        public void setExpressionA(Expression a) {
+            __subExpressionA = a;
+            if (__operandA != null) __operandA = null;
+            // __operandB ??= 0;
+        }
+        public void setExpressionB(Expression b)
+        {
+            __subExpressionB = b;
+            if (__operandB != null)  __operandB = null;
+            // __operandA ??= 0;
+        }
+        public void setOperator(string o) { __operator = o; }
+
+        public string getExpressionStr()
+        {
+            string a = "", b = "";
+
+            if (__operandA != null) a = __operandA.Value.ToString();
+            if (__operandB != null) b = __operandB.Value.ToString();
+
+            if (__subExpressionA != null) a = __subExpressionA.getExpressionStr();
+            if (__subExpressionB != null) b = __subExpressionB.getExpressionStr();
+
+            return a + " " + __operator + " " + b;
+        }
+
+        public double getResult()
+        {
+            double resultA = 0, resultB = 0;
+
+            if (__operandA != null) resultA = __operandA.Value;
+            if (__operandB != null) resultB = __operandB.Value;
+
+            if (__subExpressionA != null) resultA = __subExpressionA.getResult();
+            if (__subExpressionB != null) resultB = __subExpressionB.getResult();
+
+            switch (__operator)
+            {
+                case ArithmeticOperator.SubtractionOperator:
+                    {
+                        return resultA - resultB;
+                    }
+                case ArithmeticOperator.MultiplicationOperator:
+                    {
+                        return resultA * resultB;
+                    }
+                case ArithmeticOperator.DivisionOperator:
+                    {
+                        return resultA / resultB;
+                    }
+                case ArithmeticOperator.ModOperator:
+                    {
+                        return resultA % resultB;
+                    }
+                case ArithmeticOperator.AdditionOperator:
+                default:
+                    {
+                        return resultA + resultB;
+                    }
             };
         }
     }

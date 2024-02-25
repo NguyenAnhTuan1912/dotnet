@@ -30,7 +30,7 @@ namespace Caculator
 
         public void showTxtResultPlaceHolder()
         {
-            txtResult.Text = __txtResultPlaceHolder;
+            txtResult.Text = __calculator.currentResult == null ? "0" : __calculator.currentResult.ToString();
         }
 
         public void clearTxtResult()
@@ -48,25 +48,29 @@ namespace Caculator
             if (String.IsNullOrEmpty(c)) return;
 
             // Handle operand
-            if (Expression.IsValidOperator(c) || c == "=")
+            if (ArithmeticOperator.IsValid(c))
             {
-                // Add operator to expression
-                __calculator.currentExpressionStr += " " + c + " ";
-
                 // Reset operand
                 __calculator.currentOperandStr = "";
+
+                // Build current expression
+                __calculator.buildCurrentExpression(c);
+
+                // Show result in txtResult
+                showTxtResult(__calculator.getCurrentExpressionResult().ToString());
             }
             else
             {
                 __calculator.currentOperandStr += c;
-                __calculator.currentExpressionStr += c;
+                // Build current expression
+                __calculator.buildCurrentExpression(__calculator.currentOperandStr);
+
+                // Show operand in txtResult
+                showTxtResult(__calculator.currentOperandStr);
             };
 
-            // Show in txtResult
-            showTxtResult(__calculator.currentOperandStr);
-
             // Show expression in txtExpression
-            showTxtExpression(__calculator.currentExpressionStr);
+            showTxtExpression(__calculator.getCurrentExpressionStr());
 
             // If operand is empty, show placeholder for txtResult
             if (__calculator.currentOperandStr == "") showTxtResultPlaceHolder();
@@ -74,18 +78,22 @@ namespace Caculator
 
         public void calculate()
         {
+            if (__calculator.currentResult != null) __calculator.buildCurrentExpression("");
+
             // Calculate result
+            __calculator.currentResult = __calculator.getCurrentExpressionResult();
 
             // Show result in txtResult
+            showTxtResultPlaceHolder();
 
             // Show expression in txtExpression
+            showTxtExpression(__calculator.getCurrentExpressionStr() + " = ");
         }
 
         public CalculatorForm()
         {
             InitializeComponent();
             __calculator = new MyCalculator();
-            __calculator.currentExpression = new Expression();
         }
 
         private void btnOpenBracket_Click(object sender, EventArgs e)
@@ -154,6 +162,12 @@ namespace Caculator
             inputValue(value);
         }
 
+        private void btnZero_Click(object sender, EventArgs e)
+        {
+            string value = "0";
+            inputValue(value);
+        }
+
         private void btnAdd_Click(object sender, EventArgs e)
         {
             string value = "+";
@@ -186,8 +200,42 @@ namespace Caculator
 
         private void btnCalc_Click(object sender, EventArgs e)
         {
-            string value = "=";
-            inputValue(value);
+            calculate();
+        }
+
+        private void btnBackspace_Click(object sender, EventArgs e)
+        {
+            if (__calculator.currentResult != null)
+            {
+                __calculator.currentOperandStr = __calculator.currentResult.Value.ToString();
+                __calculator.resetCurrentExpression();
+
+                // Show expression in txtExpression
+                showTxtExpression(__calculator.getCurrentExpressionStr());
+
+                // Show operand in txtResult
+                showTxtResult(__calculator.currentOperandStr);
+
+                // Rebuild current expression
+                __calculator.buildCurrentExpression(__calculator.currentOperandStr);
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(__calculator.currentOperandStr))
+                    __calculator.currentOperandStr = __calculator.currentOperandStr.Substring(0, __calculator.currentOperandStr.Length - 1);
+
+                // Rebuild current expression
+                __calculator.buildCurrentExpression(__calculator.currentOperandStr);
+
+                // Show expression in txtExpression
+                showTxtExpression(__calculator.getCurrentExpressionStr());
+
+                // Show operand in txtResult
+                showTxtResult(__calculator.currentOperandStr);
+
+                // If operand is empty, show placeholder for txtResult
+                if (__calculator.currentOperandStr == "") showTxtResultPlaceHolder();
+            }
         }
     }
 }

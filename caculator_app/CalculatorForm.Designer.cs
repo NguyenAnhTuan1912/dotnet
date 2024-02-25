@@ -99,6 +99,7 @@
             btnBackspace.TabIndex = 3;
             btnBackspace.Text = "<--";
             btnBackspace.UseVisualStyleBackColor = false;
+            btnBackspace.Click += btnBackspace_Click;
             // 
             // btnDiv
             // 
@@ -331,6 +332,7 @@
             btnZero.TabIndex = 21;
             btnZero.Text = "0";
             btnZero.UseVisualStyleBackColor = false;
+            btnZero.Click += btnZero_Click;
             // 
             // btnSign
             // 
@@ -439,7 +441,7 @@
             btnDeleteHistoryItem.Text = "Xóa";
             btnDeleteHistoryItem.UseVisualStyleBackColor = false;
             // 
-            // Calculator
+            // CalculatorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -475,7 +477,7 @@
             Controls.Add(btnClearAll);
             Controls.Add(btnSaveToHistory);
             Margin = new Padding(3, 2, 3, 2);
-            Name = "Calculator";
+            Name = "CalculatorForm";
             Text = "SIMPLE CALCULATOR";
             ResumeLayout(false);
             PerformLayout();
