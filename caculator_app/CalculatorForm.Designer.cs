@@ -50,7 +50,7 @@
             btnComma = new Button();
             btnZero = new Button();
             btnSign = new Button();
-            txtExpression = new TextBox();
+            txtPolynomial = new TextBox();
             txtResult = new TextBox();
             label1 = new Label();
             lstHistory = new ListView();
@@ -87,6 +87,7 @@
             btnClearAll.TabIndex = 1;
             btnClearAll.Text = "CE";
             btnClearAll.UseVisualStyleBackColor = false;
+            btnClearAll.Click += btnClearAll_Click;
             // 
             // btnBackspace
             // 
@@ -346,17 +347,17 @@
             btnSign.Text = "+/-";
             btnSign.UseVisualStyleBackColor = false;
             // 
-            // txtExpression
+            // txtPolynomial
             // 
-            txtExpression.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            txtExpression.Location = new Point(24, 30);
-            txtExpression.Margin = new Padding(3, 2, 3, 2);
-            txtExpression.Multiline = true;
-            txtExpression.Name = "txtExpression";
-            txtExpression.ReadOnly = true;
-            txtExpression.Size = new Size(269, 32);
-            txtExpression.TabIndex = 24;
-            txtExpression.TextAlign = HorizontalAlignment.Right;
+            txtPolynomial.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            txtPolynomial.Location = new Point(24, 30);
+            txtPolynomial.Margin = new Padding(3, 2, 3, 2);
+            txtPolynomial.Multiline = true;
+            txtPolynomial.Name = "txtPolynomial";
+            txtPolynomial.ReadOnly = true;
+            txtPolynomial.Size = new Size(269, 32);
+            txtPolynomial.TabIndex = 24;
+            txtPolynomial.TextAlign = HorizontalAlignment.Right;
             // 
             // txtResult
             // 
@@ -453,7 +454,7 @@
             Controls.Add(lstHistory);
             Controls.Add(label1);
             Controls.Add(txtResult);
-            Controls.Add(txtExpression);
+            Controls.Add(txtPolynomial);
             Controls.Add(btnCalc);
             Controls.Add(btnComma);
             Controls.Add(btnZero);
@@ -507,7 +508,7 @@
         private Button btnComma;
         private Button btnZero;
         private Button btnSign;
-        private TextBox txtExpression;
+        private TextBox txtPolynomial;
         private TextBox txtResult;
         private Label label1;
         private ListView lstHistory;

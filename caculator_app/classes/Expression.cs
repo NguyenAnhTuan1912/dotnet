@@ -52,57 +52,55 @@ namespace Caculator.classes
         private double? __operandA;
         private double? __operandB;
 
-        private Expression? __subExpressionA;
-        private Expression? __subExpressionB;
-
         private string __operator = "";
+
+        public bool isPrecedent = false;
 
         public void setOperand(double a)
         {
-            if(__operator == "") setOperandA(a);
-            else setOperandB(a);
+            if (ArithmeticOperator.IsValid(__operator) && __operandB == null)
+                setOperandB(a);
+            else if(__operandA == null)
+                setOperandA(a);
         }
         public void setOperand(string a)
         {
-            if (__operator == "") setOperandA(a);
-            else setOperandB(a);
+            if (ArithmeticOperator.IsValid(__operator) && __operandB == null)
+                setOperandB(a);
+            else if (__operandA == null)
+                setOperandA(a);
         }
-        public void setOperandA(double a)
+        public void setOperandA(double? a = null)
         {
             __operandA = a;
-            if(__subExpressionA != null) __subExpressionA = null;
-            // __operandB ??= __operandA;
         }
-        public void setOperandB(double b)
+        public void setOperandB(double? b = null)
         {
             __operandB = b;
-            if (__subExpressionB != null)  __subExpressionB = null;
-            // __operandA ??= __operandB;
         }
         public void setOperandA(string a)
         {
             __operandA = double.Parse(a);
-            if (__subExpressionA != null)  __subExpressionA = null;
-            // __operandB ??= __operandA;
         }
         public void setOperandB(string b)
         {
             __operandB = double.Parse(b);
-            if (__subExpressionB != null) __subExpressionB = null;
-            // __operandA ??= __operandB;
-        }
-        public void setExpressionA(Expression a) {
-            __subExpressionA = a;
-            if (__operandA != null) __operandA = null;
-            // __operandB ??= 0;
-        }
-        public void setExpressionB(Expression b)
-        {
-            __subExpressionB = b;
-            if (__operandB != null)  __operandB = null;
-            // __operandA ??= 0;
         }
         public void setOperator(string o) { __operator = o; }
+
+        public bool isComplete()
+        {
+            if (ArithmeticOperator.IsValid(__operator)) return true;
+
+            bool checkA = __operandA != null, checkB = __operandB != null;
+
+            return checkA && checkB;
+        }
+
+        public bool isBridge()
+        {
+            return __operandA == null && __operandB == null && __operator != "";
+        }
 
         public string getExpressionStr()
         {
@@ -111,9 +109,6 @@ namespace Caculator.classes
             if (__operandA != null) a = __operandA.Value.ToString();
             if (__operandB != null) b = __operandB.Value.ToString();
 
-            if (__subExpressionA != null) a = __subExpressionA.getExpressionStr();
-            if (__subExpressionB != null) b = __subExpressionB.getExpressionStr();
-
             return a + " " + __operator + " " + b;
         }
 
@@ -121,11 +116,15 @@ namespace Caculator.classes
         {
             double resultA = 0, resultB = 0;
 
+            if (ArithmeticOperator.IsMorePrecedence(__operator))
+            {
+                resultA = 0;
+                resultB = 1;
+            }
+
             if (__operandA != null) resultA = __operandA.Value;
             if (__operandB != null) resultB = __operandB.Value;
 
-            if (__subExpressionA != null) resultA = __subExpressionA.getResult();
-            if (__subExpressionB != null) resultB = __subExpressionB.getResult();
 
             switch (__operator)
             {
