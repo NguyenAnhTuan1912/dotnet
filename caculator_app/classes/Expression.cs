@@ -54,8 +54,6 @@ namespace Caculator.classes
 
         private string __operator = "";
 
-        public bool isPrecedent = false;
-
         public void setOperand(double a)
         {
             if (ArithmeticOperator.IsValid(__operator) && __operandB == null)

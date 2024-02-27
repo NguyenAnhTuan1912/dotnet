@@ -16,7 +16,7 @@ namespace Caculator
     {
         private MyCalculator __calculator;
         private string[] __history;
-        private string __txtResultPlaceHolder = "0";
+        private string __calculatedExpressionStr = "";
 
         public void showTxtPolynomial(string c)
         {
@@ -96,18 +96,22 @@ namespace Caculator
 
             // Show polynomial in txtExpression
             showTxtPolynomial(__calculator.polynomialStr);
+
         }
 
         public void calculatePolynomial()
         {
             // Calculate result
-            __calculator.result = __calculator.getResult();
+            double? r = __calculator.getResult();
 
             // Show result in txtResult
             showTxtResultPlaceHolder();
 
+            if (__calculatedExpressionStr != "") __calculator.polynomialStr = __calculator.getExpressionStr() + " = ";
+            else __calculatedExpressionStr = __calculator.polynomialStr += " = ";
+
             // Show polynomial in txtExpression
-            showTxtPolynomial(__calculator.polynomialStr);
+            showTxtPolynomial(__calculatedExpressionStr);
         }
 
         public CalculatorForm()
@@ -120,12 +124,21 @@ namespace Caculator
         {
             string value = "(";
             inputValue(value);
+
+            // Update label for button
+            btnOpenBracket.Text = value + " - " + __calculator.getCurrentDepth();
         }
 
         private void btnCloseBracket_Click(object sender, EventArgs e)
         {
             string value = ")";
             inputValue(value);
+
+            // Update label for button
+            if(__calculator.getCurrentDepth() == 0)
+                btnOpenBracket.Text = "(";
+            else
+                btnOpenBracket.Text = value + " - " + __calculator.getCurrentDepth();
         }
 
         private void btnOne_Click(object sender, EventArgs e)
@@ -221,6 +234,9 @@ namespace Caculator
         private void btnCalc_Click(object sender, EventArgs e)
         {
             calculatePolynomial();
+
+            // Clear calculated expression string
+            __calculatedExpressionStr = "";
         }
 
         private void btnClearAll_Click(object sender, EventArgs e)
