@@ -96,7 +96,6 @@ namespace Caculator
 
             // Show polynomial in txtExpression
             showTxtPolynomial(__calculator.polynomialStr);
-
         }
 
         public void calculatePolynomial()

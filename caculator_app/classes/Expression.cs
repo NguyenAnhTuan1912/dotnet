@@ -85,6 +85,7 @@ namespace Caculator.classes
             __operandB = double.Parse(b);
         }
         public void setOperator(string o) { __operator = o; }
+        public string getOperator() { return __operator; }
 
         public bool isComplete()
         {

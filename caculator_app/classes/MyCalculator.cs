@@ -51,35 +51,34 @@ namespace Caculator.classes
 
         public void buildPrecedentOperatorExpression(string s)
         {
-            /*
-            if (__expression.isComplete())
+            if(__prev != null && !ArithmeticOperator.IsMorePrecedence(__prev.getOperator()))
             {
-                __expressions[__depth].Push(__expression);
+                // Set operandB of previous expression to null
+                __prev.setOperandB();
+
+                // Create new expression
                 __expression = new Expression();
-                return;
-            }
-            */
-            if (__prev == null)
-            {
+                __expression.setOperandA(__previousOperand);
                 __expression.setOperator(s);
-
-                // If precedent expression (*, /, %) is bridge expression
-                if (__expression.isBridge())
-                {
-                    Expression temp = getExpressionInCurrentDepth(__depth + 1);
-                    __expression.setOperandA(temp.getResult());
-                }
-
                 return;
             }
 
-            // Set operandB of previous expression to null
-            __prev.setOperandB();
-
-            // Create new expression
-            __expression = new Expression();
-            __expression.setOperandA(__previousOperand);
+            // Previous expressions must be computed before add new expression.
             __expression.setOperator(s);
+
+            if (__expressions[__depth].Count == 0) return;
+            if (__prev != null && ArithmeticOperator.IsMorePrecedence(__prev.getOperator()))
+            {
+                __expression.setOperandA(__prev.getResult());
+                __expressions[__depth].Pop();
+                return;
+            }
+
+            // Expression must be a bridge
+            Expression temp = getExpressionInCurrentDepth(__depth + 1);
+            __expression.setOperandA(temp.getResult());
+
+            return;
         }
 
         public void buildExpression(string s)
@@ -160,9 +159,13 @@ namespace Caculator.classes
         /// <returns>A result of calculation stack list.</returns>
         public double? getResult()
         {
-            __depth = 0;
-            if (__expressions[0].Count > 0) __expression = getExpressionInCurrentDepth();
-            else if(result != null) __expression.setOperandA(result);
+
+            if (result == null)
+            {
+                __depth = 0;
+                __expression = getExpressionInCurrentDepth();
+            }
+            else __expression.setOperandA(result);
 
             result = __expression.getResult();
 
