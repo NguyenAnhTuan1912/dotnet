@@ -16,11 +16,10 @@ namespace Caculator
     {
         private MyCalculator __calculator;
         private string[] __history;
-        private string __calculatedExpressionStr = "";
 
-        public void showTxtPolynomial(string c)
+        public void showTxtExpresion(string c)
         {
-            txtPolynomial.Text = c;
+            txtExpresion.Text = c;
         }
 
         public void showTxtResult(string c)
@@ -38,9 +37,9 @@ namespace Caculator
             txtResult.Text = "";
         }
 
-        public void clearTxtPolynomial()
+        public void clearTxtExpresion()
         {
-            txtPolynomial.Text = "";
+            txtExpresion.Text = "";
         }
 
         public void inputValue(string c)
@@ -50,12 +49,19 @@ namespace Caculator
             // Handle operand
             if (Operators.IsValid(c))
             {
-                // Reset operand
-                __calculator.currentOperandStr = "";
-                __calculator.polynomialStr += " " + c + " ";
+                if (Operators.IsValid(__calculator.previousInput)) return;
 
                 // Build current expression
                 __calculator.buildExpression(c);
+
+                // Add current input to expression string.
+                __calculator.expressionStr += " " + c + " ";
+
+                // Set to previous input
+                __calculator.previousInput = c;
+
+                // Reset current input
+                __calculator.currentInput = "";
 
                 // Show result in txtResult
                 showTxtResult(__calculator.getExpressionResult().ToString());
@@ -64,55 +70,74 @@ namespace Caculator
             // Handle ()
             else if ((c == "(" || c == ")"))
             {
-                __calculator.polynomialStr += c;
+                if (
+                    (__calculator.previousInput == ")" && c == "(") ||
+                    (__calculator.previousInput != "" && !Operators.IsValid(__calculator.previousInput) && c == "(")
+                )
+                    __calculator.buildExpression(Operators.MultiplicationOperator);
+
                 __calculator.buildSubExpression(c);
+
+                // Add current input to expression string.
+                __calculator.expressionStr += c;
+
+                // Set to previous input
+                __calculator.previousInput = c;
+
+                // Reset current input
+                __calculator.currentInput = "";
             }
 
             // Any thing else
             else
             {
-                __calculator.currentOperandStr += c;
-                __calculator.polynomialStr += c;
+                if (__calculator.result != null) clearAll();
+
+                __calculator.currentInput += c;
 
                 // Build current expression
-                __calculator.buildExpression(__calculator.currentOperandStr);
+                __calculator.buildExpression(__calculator.currentInput);
+
+                // Add current input to expression string.
+                __calculator.expressionStr += c;
+
+                // Set to previous input
+                __calculator.previousInput = __calculator.currentInput;
 
                 // Show operand in txtResult
-                showTxtResult(__calculator.currentOperandStr);
+                showTxtResult(__calculator.currentInput);
             }
 
             // Show polynomial in txtExpression
-            showTxtPolynomial(__calculator.polynomialStr);
+            showTxtExpresion(__calculator.expressionStr);
 
             // If operand is empty, show placeholder for txtResult
-            if (__calculator.currentOperandStr == "") showTxtResultPlaceHolder();
+            if (__calculator.currentInput == "") showTxtResultPlaceHolder();
         }
 
-        public void calculateCurrent()
+        public void clearAll()
+        {
+            __calculator.reset();
+
+            // Show polynomial in txtExpression
+            showTxtExpresion("");
+
+            // Show placeholder in txtResult
+            showTxtResultPlaceHolder();
+        }
+
+        public void calculate()
         {
             // Calculate result
-            __calculator.result = __calculator.getExpressionResult();
+            __calculator.getResult();
 
             // Show result in txtResult
             showTxtResultPlaceHolder();
 
             // Show polynomial in txtExpression
-            showTxtPolynomial(__calculator.polynomialStr);
-        }
+            showTxtExpresion(__calculator.expressionStr + " = ");
 
-        public void calculatePolynomial()
-        {
-            // Calculate result
-            decimal r = __calculator.getResult();
-
-            // Show result in txtResult
-            showTxtResultPlaceHolder();
-
-            if (__calculatedExpressionStr != "") __calculator.polynomialStr = __calculator.getExpressionStr() + " = ";
-            else __calculatedExpressionStr = __calculator.polynomialStr += " = ";
-
-            // Show polynomial in txtExpression
-            showTxtPolynomial(__calculatedExpressionStr);
+            __calculator.expressionStr = __calculator.getExpressionStr();
         }
 
         public CalculatorForm()
@@ -136,7 +161,7 @@ namespace Caculator
             inputValue(value);
 
             // Update label for button
-            if(__calculator.getCurrentDepth() == 0)
+            if (__calculator.getCurrentDepth() == 0)
                 btnOpenBracket.Text = "(";
             else
                 btnOpenBracket.Text = value + " - " + __calculator.getCurrentDepth();
@@ -202,6 +227,28 @@ namespace Caculator
             inputValue(value);
         }
 
+        private void btnDot_Click(object sender, EventArgs e)
+        {
+            string value = ".";
+            inputValue(value);
+        }
+
+        private void btnSign_Click(object sender, EventArgs e)
+        {
+            if (__calculator.currentInput == "") return;
+            string value = __calculator.currentInput;
+            int N = value.Length;
+
+            __calculator.expressionStr = __calculator.expressionStr.Substring(0, __calculator.expressionStr.Length - N);
+
+            if (value[0] == '-') value = value.Substring(1);
+            else value = "-" + value;
+
+            __calculator.currentInput = "";
+
+            inputValue(value);
+        }
+
         private void btnAdd_Click(object sender, EventArgs e)
         {
             string value = Operators.AdditionOperator;
@@ -234,21 +281,13 @@ namespace Caculator
 
         private void btnCalc_Click(object sender, EventArgs e)
         {
-            calculatePolynomial();
-
-            // Clear calculated expression string
-            __calculatedExpressionStr = "";
+            // Calculate final result
+            calculate();
         }
 
         private void btnClearAll_Click(object sender, EventArgs e)
         {
-            __calculator.reset();
-
-            // Show polynomial in txtExpression
-            showTxtPolynomial(__calculator.polynomialStr);
-
-            // Show placeholder in txtResult
-            showTxtResultPlaceHolder();
+            clearAll();
         }
 
         private void btnBackspace_Click(object sender, EventArgs e)
@@ -256,35 +295,35 @@ namespace Caculator
             // If has result.
             if (__calculator.result != null)
             {
-                __calculator.currentOperandStr = __calculator.result.Value.ToString();
+                __calculator.currentInput = __calculator.result.Value.ToString();
                 // __calculator.reset();
 
                 // Show polynomial in txtExpression
-                showTxtPolynomial(__calculator.polynomialStr);
+                showTxtExpresion(__calculator.expressionStr);
 
                 // Show operand in txtResult
-                showTxtResult(__calculator.currentOperandStr);
+                showTxtResult(__calculator.currentInput);
 
                 // Rebuild current expression
-                __calculator.buildExpression(__calculator.currentOperandStr);
+                __calculator.buildExpression(__calculator.currentInput);
 
                 return;
             }
 
-            if (!String.IsNullOrEmpty(__calculator.currentOperandStr))
-                __calculator.currentOperandStr = __calculator.currentOperandStr.Substring(0, __calculator.currentOperandStr.Length - 1);
+            if (!String.IsNullOrEmpty(__calculator.currentInput))
+                __calculator.currentInput = __calculator.currentInput.Substring(0, __calculator.currentInput.Length - 1);
 
             // Rebuild current expression
-            __calculator.buildExpression(__calculator.currentOperandStr);
+            __calculator.buildExpression(__calculator.currentInput);
 
             // Show polynomial in txtExpression
-            showTxtPolynomial(__calculator.polynomialStr);
+            showTxtExpresion(__calculator.expressionStr);
 
             // Show operand in txtResult
-            showTxtResult(__calculator.currentOperandStr);
+            showTxtResult(__calculator.currentInput);
 
             // If operand is empty, show placeholder for txtResult
-            if (__calculator.currentOperandStr == "") showTxtResultPlaceHolder();
+            if (__calculator.currentInput == "") showTxtResultPlaceHolder();
         }
     }
 }

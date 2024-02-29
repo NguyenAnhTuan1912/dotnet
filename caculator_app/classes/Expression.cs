@@ -90,7 +90,9 @@ namespace Caculator.classes
 
         public string getExpressionStr()
         {
-            string a = "", b = "";
+            string a = "0", b = "0";
+
+            if (Operators.GetPrecedentValue(__operator) >= 1) b = "1";
 
             if (__operandA != null) a = __operandA.Value.ToString();
             if (__operandB != null) b = __operandB.Value.ToString();

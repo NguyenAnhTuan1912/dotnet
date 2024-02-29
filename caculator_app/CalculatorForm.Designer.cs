@@ -47,10 +47,10 @@
             btnTwo = new Button();
             btnOne = new Button();
             btnCalc = new Button();
-            btnComma = new Button();
+            btnDot = new Button();
             btnZero = new Button();
             btnSign = new Button();
-            txtPolynomial = new TextBox();
+            txtExpresion = new TextBox();
             txtResult = new TextBox();
             label1 = new Label();
             lstHistory = new ListView();
@@ -310,17 +310,18 @@
             btnCalc.UseVisualStyleBackColor = false;
             btnCalc.Click += btnCalc_Click;
             // 
-            // btnComma
+            // btnDot
             // 
-            btnComma.BackColor = SystemColors.Window;
-            btnComma.FlatStyle = FlatStyle.Flat;
-            btnComma.Location = new Point(161, 311);
-            btnComma.Margin = new Padding(3, 2, 3, 2);
-            btnComma.Name = "btnComma";
-            btnComma.Size = new Size(63, 35);
-            btnComma.TabIndex = 22;
-            btnComma.Text = ",";
-            btnComma.UseVisualStyleBackColor = false;
+            btnDot.BackColor = SystemColors.Window;
+            btnDot.FlatStyle = FlatStyle.Flat;
+            btnDot.Location = new Point(161, 311);
+            btnDot.Margin = new Padding(3, 2, 3, 2);
+            btnDot.Name = "btnDot";
+            btnDot.Size = new Size(63, 35);
+            btnDot.TabIndex = 22;
+            btnDot.Text = ".";
+            btnDot.UseVisualStyleBackColor = false;
+            btnDot.Click += btnDot_Click;
             // 
             // btnZero
             // 
@@ -346,27 +347,33 @@
             btnSign.TabIndex = 20;
             btnSign.Text = "+/-";
             btnSign.UseVisualStyleBackColor = false;
+            btnSign.Click += btnSign_Click;
             // 
-            // txtPolynomial
+            // txtExpresion
             // 
-            txtPolynomial.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            txtPolynomial.Location = new Point(24, 30);
-            txtPolynomial.Margin = new Padding(3, 2, 3, 2);
-            txtPolynomial.Name = "txtPolynomial";
-            txtPolynomial.ReadOnly = true;
-            txtPolynomial.Size = new Size(269, 26);
-            txtPolynomial.TabIndex = 24;
-            txtPolynomial.TextAlign = HorizontalAlignment.Right;
+            txtExpresion.BorderStyle = BorderStyle.None;
+            txtExpresion.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            txtExpresion.Location = new Point(24, 30);
+            txtExpresion.Margin = new Padding(3, 2, 3, 2);
+            txtExpresion.Name = "txtExpresion";
+            txtExpresion.ReadOnly = true;
+            txtExpresion.RightToLeft = RightToLeft.No;
+            txtExpresion.ScrollBars = ScrollBars.Horizontal;
+            txtExpresion.Size = new Size(269, 19);
+            txtExpresion.TabIndex = 24;
+            txtExpresion.TextAlign = HorizontalAlignment.Right;
             // 
             // txtResult
             // 
-            txtResult.BorderStyle = BorderStyle.FixedSingle;
+            txtResult.BorderStyle = BorderStyle.None;
             txtResult.Font = new Font("Arial", 24F, FontStyle.Bold, GraphicsUnit.Point);
             txtResult.Location = new Point(24, 60);
             txtResult.Margin = new Padding(3, 2, 3, 2);
             txtResult.Name = "txtResult";
             txtResult.ReadOnly = true;
-            txtResult.Size = new Size(269, 44);
+            txtResult.RightToLeft = RightToLeft.No;
+            txtResult.ScrollBars = ScrollBars.Horizontal;
+            txtResult.Size = new Size(269, 37);
             txtResult.TabIndex = 25;
             txtResult.TextAlign = HorizontalAlignment.Right;
             // 
@@ -452,9 +459,9 @@
             Controls.Add(lstHistory);
             Controls.Add(label1);
             Controls.Add(txtResult);
-            Controls.Add(txtPolynomial);
+            Controls.Add(txtExpresion);
             Controls.Add(btnCalc);
-            Controls.Add(btnComma);
+            Controls.Add(btnDot);
             Controls.Add(btnZero);
             Controls.Add(btnSign);
             Controls.Add(btnAdd);
@@ -503,10 +510,10 @@
         private Button btnTwo;
         private Button btnOne;
         private Button btnCalc;
-        private Button btnComma;
+        private Button btnDot;
         private Button btnZero;
         private Button btnSign;
-        private TextBox txtPolynomial;
+        private TextBox txtExpresion;
         private TextBox txtResult;
         private Label label1;
         private ListView lstHistory;

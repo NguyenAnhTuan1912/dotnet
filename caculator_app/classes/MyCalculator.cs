@@ -15,21 +15,31 @@ namespace Caculator.classes
         private int __depth = 0;
 
         public double? result;
-        public string currentOperandStr = "";
-        public string polynomialStr = "";
+        public string currentInput = "";
+        public string previousInput = "";
+        public string expressionStr = "";
 
         public MyCalculator()
         {
             if(__expressions.Count == 0) __expressions.Add(new Stack<Expression>());
         }
         
+        /// <summary>
+        /// Use this method to start new Calculation Stack (or create new sub expression).
+        /// </summary>
+        /// <param name="s"></param>
         public void buildSubExpression(string s)
         {
             // Case 3: ()
             // In subexpression
             if (s == ")" && __depth > 0)
             {
-                if (__expression.isComplete())
+                if (__expression.getOperandA() != null && !Operators.IsValid(__expression.getOperator()))
+                {
+                    __expression.setOperator(Operators.AdditionOperator);
+                    __expressions[__depth].Push(__expression);
+                    __expression = new Expression();
+                } else if (__expression.isComplete())
                 {
                     __expressions[__depth].Push(__expression);
                     __expression = new Expression();
@@ -40,21 +50,47 @@ namespace Caculator.classes
                 return;
             }
 
-            if (Operators.IsValid(__expression.getOperator())) __expressions[__depth].Push(__expression);
+            if (Operators.IsValid(__expression.getOperator()))
+                __expressions[__depth].Push(__expression);
 
             __depth++;
             __expressions.Add(new Stack<Expression>());
-
 
             __prev = null;
             __expression = new Expression();
         }
 
+        /// <summary>
+        /// <para>
+        /// Use this method to build expression. In each loop, user will input data through buttons on the GUI. There are 3
+        /// possible values that user may input:
+        /// </para>
+        /// <list type="number">
+        ///     <item>
+        ///         <description>Numbers or dot .</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>( or )</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Operators</description>
+        ///     </item>
+        /// </list>
+        /// <para>
+        /// This method will treat differently with each type.
+        /// </para>
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public void buildExpression(string s)
         {
             // Case 1: If s is number.
             if (!Operators.IsValid(s))
             {
+                // If "." is inputted but operand A or B is null, return false.
+                if (s == "." && (__expression.getOperandA() == null || __expression.getOperandB() == null))
+                    s = "0.";
+
                 if (Operators.IsValid(__expression.getOperator())) __expression.setOperandB(s);
                 else __expression.setOperandA(s);
 
@@ -69,6 +105,9 @@ namespace Caculator.classes
                 __prev = __expression;
                 __expression = new Expression();
             }
+
+
+            if (Operators.IsValid(__expression.getOperator())) return;
 
             __expression.setOperator(s);
 
@@ -144,9 +183,9 @@ namespace Caculator.classes
         /// from calculation stack list.
         /// </summary>
         /// <returns>A result of calculation stack list.</returns>
-        public decimal getResult()
+        public double? getResult()
         {
-            if (Operators.IsValid(__expression.getOperator())) __expressions[__depth].Push(__expression);
+            if (Operators.IsValid(__expression.getOperator()) && (__expression.getOperandA() != null || __expression.getOperandB != null)) __expressions[__depth].Push(__expression);
             if (result == null)
             {
                 __depth = 0;
@@ -154,9 +193,12 @@ namespace Caculator.classes
             }
             else __expression.setOperandA(result);
 
-            result = __expression.getResult();
+            // Reset some values
+            currentInput = "";
 
-            return Math.Round((decimal)result, 2);
+            result = Math.Round((double)__expression.getResult(), 6);
+
+            return result;
         }
 
         /// <summary>
@@ -196,8 +238,9 @@ namespace Caculator.classes
             __depth = 0;
 
             result = null;
-            currentOperandStr = "";
-            polynomialStr = "";
+            currentInput = "";
+            expressionStr = "";
+            previousInput = "";
     }
     }
 }
