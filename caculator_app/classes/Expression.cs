@@ -6,79 +6,137 @@ using System.Threading.Tasks;
 
 namespace Caculator.classes
 {
+
     public class Expression
     {
-        private double __operandA;
-        private double __operandB = 0;
+        private double? __operandA;
+        private double? __operandB;
+
         private string __operator = "";
 
-        // Static properties
-        public const string AdditionOperator = "+";
-        public const string SubtractionOperator = "-";
-        public const string MultiplicationOperator = "x";
-        public const string DivisionOperator = "/";
-        public const string ModOperator = "%";
-
-        public Expression(string a = "0", string b = "0", string o = "+")
+        // Setters
+        public void setOperand(double a)
+        {
+            if (Operators.IsValid(__operator) && __operandB == null)
+                setOperandB(a);
+            else if(__operandA == null)
+                setOperandA(a);
+        }
+        public void setOperand(string a)
+        {
+            if (Operators.IsValid(__operator) && __operandB == null)
+                setOperandB(a);
+            else if (__operandA == null)
+                setOperandA(a);
+        }
+        public void setOperandA(double? a = null)
+        {
+            __operandA = a;
+        }
+        public void setOperandB(double? b = null)
+        {
+            __operandB = b;
+        }
+        public void setOperandA(string a)
         {
             __operandA = double.Parse(a);
-            __operandB = double.Parse(b == "" ? a : b);
-            __operator = o;
+        }
+        public void setOperandB(string b)
+        {
+            __operandB = double.Parse(b);
+        }
+        public void setOperator(string o) { __operator = o; }
+
+        // Getters
+        public string getOperator() { return __operator; }
+        public double? getOperandA() { return __operandA; }
+        public double? getOperandB() { return __operandB; }
+
+        /// <summary>
+        /// Use this method to get the "complete" status of an expression.
+        /// An expression is complete when it has 2 operands and operator.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if expression has 2 operands and operator.
+        /// <see langword="false"/> if expression lack 1 or 2 operands or operator then return false</returns>
+        public bool isComplete()
+        {
+            return (__operandA != null) && (__operandB != null) && Operators.IsValid(__operator);
         }
 
-        public void setOperandA(double a) { __operandA = a; }
-        public void setOperandA(string a) { __operandA = double.Parse(a); }
-        public void setOperandB(double b) { __operandB = b; }
-        public void setOperandB(string b) { __operandB = double.Parse(b); }
-        public void setOperator(string o) { __operator = o; }
-        public void setOperand(string n)
+        /// <summary>
+        /// Use the method to compare precedent betwwee 2 expression.
+        /// If 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns>
+        ///     <see langword="true"/> if this expression has higher "precedent value".
+        ///     <see langword="false"/> if this expression has equal or less than  "precedent value" then return false
+        /// </returns>
+        public bool isMorePrecedentThan(Expression e)
         {
-            double.chec
+            return Operators.GetPrecedentValue(__operator) > Operators.GetPrecedentValue(e.getOperator());
+        }
+
+        /// <summary>
+        /// Use this method to check if this expression is bridge.
+        /// An expression is bridge when it only has operator.
+        /// </summary>
+        /// <returns></returns>
+        public bool isBridge()
+        {
+            return (__operandA == null) && (__operandB == null) && Operators.IsValid(__operator);
+        }
+
+        public string getExpressionStr()
+        {
+            string a = "0", b = "0";
+
+            if (Operators.GetPrecedentValue(__operator) >= 1) b = "1";
+
+            if (__operandA != null) a = __operandA.Value.ToString();
+            if (__operandB != null) b = __operandB.Value.ToString();
+
+            return a + " " + __operator + " " + b;
         }
 
         public double getResult()
         {
+            double resultA = 0, resultB = 0;
+
+            if (Operators.GetPrecedentValue(__operator) >= 1)
+            {
+                resultA = 0;
+                resultB = 1;
+            }
+
+            if (__operandA != null) resultA = __operandA.Value;
+            if (__operandB != null) resultB = __operandB.Value;
+
+
             switch (__operator)
             {
-                case Expression.SubtractionOperator:
-                    {
-                        return __operandA - __operandA;
-                    }
-                case Expression.MultiplicationOperator:
-                    {
-                        return __operandA * __operandA;
-                    }
-                case Expression.DivisionOperator:
-                    {
-                        return __operandA / __operandA;
-                    }
-                case Expression.ModOperator:
-                    {
-                        return __operandA % __operandA;
-                    }
-                case Expression.AdditionOperator:
+                case Operators.SubtractionOperator:
+                {
+                    return resultA - resultB;
+                }
+                case Operators.MultiplicationOperator:
+                {
+                    return resultA * resultB;
+                }
+                case Operators.DivisionOperator:
+                {
+                    return resultA / resultB;
+                }
+                case Operators.ModOperator:
+                {
+                    return resultA % resultB;
+                }
+                case Operators.AdditionOperator:
                 default:
-                    {
-                        return __operandA + __operandA;
-                    }
-            };
-        }
-
-        // Static methods
-        static public bool IsValidOperator(string c)
-        {
-            switch (c)
-            {
-                case Expression.AdditionOperator:
-                case Expression.SubtractionOperator:
-                case Expression.MultiplicationOperator:
-                case Expression.DivisionOperator:
-                case Expression.ModOperator:
-                    {
-                        return true;
-                    }
-                default:
-                    return false;
+                {
+                    return resultA + resultB;
+                }
             };
         }
     }

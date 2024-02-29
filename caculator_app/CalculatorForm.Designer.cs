@@ -47,17 +47,17 @@
             btnTwo = new Button();
             btnOne = new Button();
             btnCalc = new Button();
-            btnComma = new Button();
+            btnDot = new Button();
             btnZero = new Button();
             btnSign = new Button();
-            txtExpression = new TextBox();
+            txtExpresion = new TextBox();
             txtResult = new TextBox();
             label1 = new Label();
-            lstHistory = new ListView();
             btnPercent = new Button();
             btnDeleteHistory = new Button();
             btnLoadHistoryItem = new Button();
             btnDeleteHistoryItem = new Button();
+            lbxHistory = new ListBox();
             SuspendLayout();
             // 
             // btnSaveToHistory
@@ -74,6 +74,7 @@
             btnSaveToHistory.Tag = "";
             btnSaveToHistory.Text = "Lưu";
             btnSaveToHistory.UseVisualStyleBackColor = false;
+            btnSaveToHistory.Click += btnSaveToHistory_Click;
             // 
             // btnClearAll
             // 
@@ -87,6 +88,7 @@
             btnClearAll.TabIndex = 1;
             btnClearAll.Text = "CE";
             btnClearAll.UseVisualStyleBackColor = false;
+            btnClearAll.Click += btnClearAll_Click;
             // 
             // btnBackspace
             // 
@@ -99,6 +101,7 @@
             btnBackspace.TabIndex = 3;
             btnBackspace.Text = "<--";
             btnBackspace.UseVisualStyleBackColor = false;
+            btnBackspace.Click += btnBackspace_Click;
             // 
             // btnDiv
             // 
@@ -308,17 +311,18 @@
             btnCalc.UseVisualStyleBackColor = false;
             btnCalc.Click += btnCalc_Click;
             // 
-            // btnComma
+            // btnDot
             // 
-            btnComma.BackColor = SystemColors.Window;
-            btnComma.FlatStyle = FlatStyle.Flat;
-            btnComma.Location = new Point(161, 311);
-            btnComma.Margin = new Padding(3, 2, 3, 2);
-            btnComma.Name = "btnComma";
-            btnComma.Size = new Size(63, 35);
-            btnComma.TabIndex = 22;
-            btnComma.Text = ",";
-            btnComma.UseVisualStyleBackColor = false;
+            btnDot.BackColor = SystemColors.Window;
+            btnDot.FlatStyle = FlatStyle.Flat;
+            btnDot.Location = new Point(161, 311);
+            btnDot.Margin = new Padding(3, 2, 3, 2);
+            btnDot.Name = "btnDot";
+            btnDot.Size = new Size(63, 35);
+            btnDot.TabIndex = 22;
+            btnDot.Text = ".";
+            btnDot.UseVisualStyleBackColor = false;
+            btnDot.Click += btnDot_Click;
             // 
             // btnZero
             // 
@@ -331,6 +335,7 @@
             btnZero.TabIndex = 21;
             btnZero.Text = "0";
             btnZero.UseVisualStyleBackColor = false;
+            btnZero.Click += btnZero_Click;
             // 
             // btnSign
             // 
@@ -343,29 +348,33 @@
             btnSign.TabIndex = 20;
             btnSign.Text = "+/-";
             btnSign.UseVisualStyleBackColor = false;
+            btnSign.Click += btnSign_Click;
             // 
-            // txtExpression
+            // txtExpresion
             // 
-            txtExpression.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            txtExpression.Location = new Point(24, 30);
-            txtExpression.Margin = new Padding(3, 2, 3, 2);
-            txtExpression.Multiline = true;
-            txtExpression.Name = "txtExpression";
-            txtExpression.ReadOnly = true;
-            txtExpression.Size = new Size(269, 32);
-            txtExpression.TabIndex = 24;
-            txtExpression.TextAlign = HorizontalAlignment.Right;
+            txtExpresion.BorderStyle = BorderStyle.None;
+            txtExpresion.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            txtExpresion.Location = new Point(24, 30);
+            txtExpresion.Margin = new Padding(3, 2, 3, 2);
+            txtExpresion.Name = "txtExpresion";
+            txtExpresion.ReadOnly = true;
+            txtExpresion.RightToLeft = RightToLeft.No;
+            txtExpresion.ScrollBars = ScrollBars.Horizontal;
+            txtExpresion.Size = new Size(269, 19);
+            txtExpresion.TabIndex = 24;
+            txtExpresion.TextAlign = HorizontalAlignment.Right;
             // 
             // txtResult
             // 
-            txtResult.BorderStyle = BorderStyle.FixedSingle;
+            txtResult.BorderStyle = BorderStyle.None;
             txtResult.Font = new Font("Arial", 24F, FontStyle.Bold, GraphicsUnit.Point);
             txtResult.Location = new Point(24, 60);
             txtResult.Margin = new Padding(3, 2, 3, 2);
-            txtResult.Multiline = true;
             txtResult.Name = "txtResult";
             txtResult.ReadOnly = true;
-            txtResult.Size = new Size(269, 48);
+            txtResult.RightToLeft = RightToLeft.No;
+            txtResult.ScrollBars = ScrollBars.Horizontal;
+            txtResult.Size = new Size(269, 37);
             txtResult.TabIndex = 25;
             txtResult.TextAlign = HorizontalAlignment.Right;
             // 
@@ -377,15 +386,6 @@
             label1.Size = new Size(98, 15);
             label1.TabIndex = 27;
             label1.Text = "Lịch sử phép tính";
-            // 
-            // lstHistory
-            // 
-            lstHistory.BackColor = SystemColors.ButtonFace;
-            lstHistory.Location = new Point(299, 61);
-            lstHistory.Name = "lstHistory";
-            lstHistory.Size = new Size(298, 245);
-            lstHistory.TabIndex = 28;
-            lstHistory.UseCompatibleStateImageBehavior = false;
             // 
             // btnPercent
             // 
@@ -414,6 +414,7 @@
             btnDeleteHistory.TabIndex = 30;
             btnDeleteHistory.Text = "Xóa hết";
             btnDeleteHistory.UseVisualStyleBackColor = false;
+            btnDeleteHistory.Click += btnDeleteHistory_Click;
             // 
             // btnLoadHistoryItem
             // 
@@ -424,8 +425,9 @@
             btnLoadHistoryItem.Name = "btnLoadHistoryItem";
             btnLoadHistoryItem.Size = new Size(63, 35);
             btnLoadHistoryItem.TabIndex = 31;
-            btnLoadHistoryItem.Text = "Lấy lại";
+            btnLoadHistoryItem.Text = "Tải lại";
             btnLoadHistoryItem.UseVisualStyleBackColor = false;
+            btnLoadHistoryItem.Click += btnLoadHistoryItem_Click;
             // 
             // btnDeleteHistoryItem
             // 
@@ -438,22 +440,34 @@
             btnDeleteHistoryItem.TabIndex = 32;
             btnDeleteHistoryItem.Text = "Xóa";
             btnDeleteHistoryItem.UseVisualStyleBackColor = false;
+            btnDeleteHistoryItem.Click += btnDeleteHistoryItem_Click;
             // 
-            // Calculator
+            // lbxHistory
+            // 
+            lbxHistory.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            lbxHistory.FormattingEnabled = true;
+            lbxHistory.ItemHeight = 18;
+            lbxHistory.Location = new Point(299, 61);
+            lbxHistory.Name = "lbxHistory";
+            lbxHistory.Size = new Size(298, 238);
+            lbxHistory.TabIndex = 33;
+            lbxHistory.SelectedIndexChanged += lbxHistory_SelectedIndexChanged;
+            // 
+            // CalculatorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(621, 366);
+            Controls.Add(lbxHistory);
             Controls.Add(btnDeleteHistoryItem);
             Controls.Add(btnLoadHistoryItem);
             Controls.Add(btnDeleteHistory);
             Controls.Add(btnPercent);
-            Controls.Add(lstHistory);
             Controls.Add(label1);
             Controls.Add(txtResult);
-            Controls.Add(txtExpression);
+            Controls.Add(txtExpresion);
             Controls.Add(btnCalc);
-            Controls.Add(btnComma);
+            Controls.Add(btnDot);
             Controls.Add(btnZero);
             Controls.Add(btnSign);
             Controls.Add(btnAdd);
@@ -475,7 +489,7 @@
             Controls.Add(btnClearAll);
             Controls.Add(btnSaveToHistory);
             Margin = new Padding(3, 2, 3, 2);
-            Name = "Calculator";
+            Name = "CalculatorForm";
             Text = "SIMPLE CALCULATOR";
             ResumeLayout(false);
             PerformLayout();
@@ -502,16 +516,16 @@
         private Button btnTwo;
         private Button btnOne;
         private Button btnCalc;
-        private Button btnComma;
+        private Button btnDot;
         private Button btnZero;
         private Button btnSign;
-        private TextBox txtExpression;
+        private TextBox txtExpresion;
         private TextBox txtResult;
         private Label label1;
-        private ListView lstHistory;
         private Button btnPercent;
         private Button btnDeleteHistory;
         private Button btnLoadHistoryItem;
         private Button btnDeleteHistoryItem;
+        private ListBox lbxHistory;
     }
 }
