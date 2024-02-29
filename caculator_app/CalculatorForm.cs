@@ -15,7 +15,7 @@ namespace Caculator
     public partial class CalculatorForm : Form
     {
         private MyCalculator __calculator;
-        private string[] __history;
+        private int __selectedHistoryIndex = -1;
 
         public void showTxtExpresion(string c)
         {
@@ -137,7 +137,7 @@ namespace Caculator
             // Show polynomial in txtExpression
             showTxtExpresion(__calculator.expressionStr + " = ");
 
-            __calculator.expressionStr = __calculator.getExpressionStr();
+            if(__calculator.result != null) __calculator.expressionStr = __calculator.getExpressionStr();
         }
 
         public CalculatorForm()
@@ -311,12 +311,16 @@ namespace Caculator
             }
 
             if (!String.IsNullOrEmpty(__calculator.currentInput))
+            {
                 __calculator.currentInput = __calculator.currentInput.Substring(0, __calculator.currentInput.Length - 1);
+                __calculator.expressionStr = __calculator.expressionStr.Substring(0, __calculator.expressionStr.Length - 1);
+            }
+            else return;
 
             // Rebuild current expression
-            __calculator.buildExpression(__calculator.currentInput);
+            __calculator.buildExpression(__calculator.currentInput == "" ? "0" : __calculator.currentInput);
 
-            // Show polynomial in txtExpression
+            // Show expression in txtExpression
             showTxtExpresion(__calculator.expressionStr);
 
             // Show operand in txtResult
@@ -324,6 +328,43 @@ namespace Caculator
 
             // If operand is empty, show placeholder for txtResult
             if (__calculator.currentInput == "") showTxtResultPlaceHolder();
+        }
+
+        private void btnSaveToHistory_Click(object sender, EventArgs e)
+        {
+            Calculation? c = __calculator.saveCalculation();
+            if (c != null) lbxHistory.Items.Add(c.getExpressionStr());
+        }
+
+        private void lbxHistory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            __selectedHistoryIndex = lbxHistory.SelectedIndex;
+        }
+
+        private void btnLoadHistoryItem_Click(object sender, EventArgs e)
+        {
+            Calculation c = __calculator.loadCalculation(__selectedHistoryIndex);
+
+            // Show expression in txtExpression
+            showTxtExpresion(c.getExpressionStr());
+        }
+
+        private void btnDeleteHistoryItem_Click(object sender, EventArgs e)
+        {
+            __calculator.deleteCalculation(__selectedHistoryIndex);
+            lbxHistory.Items.RemoveAt(__selectedHistoryIndex);
+
+            // Show expression in txtExpression
+            showTxtExpresion(__calculator.getExpressionStr());
+
+            // Show placeholder in txtResult
+            showTxtResultPlaceHolder();
+        }
+
+        private void btnDeleteHistory_Click(object sender, EventArgs e)
+        {
+            __calculator.clearHistory();
+            lbxHistory.Items.Clear();
         }
     }
 }

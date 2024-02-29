@@ -2,17 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Caculator.classes
 {
+    /// <summary>
+    /// Use this class to create an instance to store the calculation.
+    /// </summary>
+    public class Calculation
+    {
+        private Expression __calculatedExpression;
+        private string __expressionStr = "";
+
+        // Setters
+        public void setCalculatedExpression(Expression e)
+        {
+            __calculatedExpression = e;
+        }
+
+        public void setExpressionStr(string s)
+        {
+            __expressionStr = s;
+        }
+
+        // Getters
+        public Expression getCalculatedExpression() { return __calculatedExpression; }
+        public string getExpressionStr() { return __expressionStr; }
+    }
+
     public class MyCalculator
     {
+        private List<Calculation> __history = new List<Calculation>();
         private List<Stack<Expression>> __expressions = new List<Stack<Expression>>(1);
         private Expression __expression = new Expression();
         private Expression? __prev;
         private int __depth = 0;
+        private string __calculatedExpressionStr = "";
 
         public double? result;
         public string currentInput = "";
@@ -193,10 +220,9 @@ namespace Caculator.classes
             }
             else __expression.setOperandA(result);
 
-            // Reset some values
             currentInput = "";
-
             result = Math.Round((double)__expression.getResult(), 6);
+            __calculatedExpressionStr = expressionStr;
 
             return result;
         }
@@ -241,6 +267,60 @@ namespace Caculator.classes
             currentInput = "";
             expressionStr = "";
             previousInput = "";
-    }
+        }
+
+        /// <summary>
+        /// Use this method to save calculation to history.
+        /// </summary>
+        public Calculation? saveCalculation()
+        {
+            if (!__expression.isComplete()) return null;
+            // Save the calculation to history
+            Calculation calculation = new Calculation();
+            calculation.setCalculatedExpression(__expression);
+            calculation.setExpressionStr(__calculatedExpressionStr);
+
+            __history.Add(calculation);
+
+            // Reset all after save the calculation.
+            reset();
+
+            return calculation;
+        }
+
+        /// <summary>
+        /// Use this method to load calculation from history.
+        /// </summary>
+        /// <param name="index"></param>
+        public Calculation loadCalculation(int index = 0)
+        {
+            // Reset first
+            reset();
+
+            // Load some data
+            expressionStr = __history[index].getExpressionStr();
+            __expression = __history[index].getCalculatedExpression();
+
+            return __history[index];
+        }
+
+        /// <summary>
+        /// Use this method to delete a calculation at index.
+        /// </summary>
+        /// <param name="index"></param>
+        public void deleteCalculation(int index = 0)
+        {
+            // Remove calculation from history
+            __history.RemoveAt(index);
+        }
+
+        /// <summary>
+        /// Use this method to clear all calculations in history.
+        /// </summary>
+        public void clearHistory()
+        {
+            // Remove calculation from history
+            __history.Clear();
+        }
     }
 }

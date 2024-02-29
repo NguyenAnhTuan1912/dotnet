@@ -53,11 +53,11 @@
             txtExpresion = new TextBox();
             txtResult = new TextBox();
             label1 = new Label();
-            lstHistory = new ListView();
             btnPercent = new Button();
             btnDeleteHistory = new Button();
             btnLoadHistoryItem = new Button();
             btnDeleteHistoryItem = new Button();
+            lbxHistory = new ListBox();
             SuspendLayout();
             // 
             // btnSaveToHistory
@@ -74,6 +74,7 @@
             btnSaveToHistory.Tag = "";
             btnSaveToHistory.Text = "Lưu";
             btnSaveToHistory.UseVisualStyleBackColor = false;
+            btnSaveToHistory.Click += btnSaveToHistory_Click;
             // 
             // btnClearAll
             // 
@@ -386,15 +387,6 @@
             label1.TabIndex = 27;
             label1.Text = "Lịch sử phép tính";
             // 
-            // lstHistory
-            // 
-            lstHistory.BackColor = SystemColors.ButtonFace;
-            lstHistory.Location = new Point(299, 61);
-            lstHistory.Name = "lstHistory";
-            lstHistory.Size = new Size(298, 245);
-            lstHistory.TabIndex = 28;
-            lstHistory.UseCompatibleStateImageBehavior = false;
-            // 
             // btnPercent
             // 
             btnPercent.BackColor = SystemColors.Window;
@@ -422,6 +414,7 @@
             btnDeleteHistory.TabIndex = 30;
             btnDeleteHistory.Text = "Xóa hết";
             btnDeleteHistory.UseVisualStyleBackColor = false;
+            btnDeleteHistory.Click += btnDeleteHistory_Click;
             // 
             // btnLoadHistoryItem
             // 
@@ -432,8 +425,9 @@
             btnLoadHistoryItem.Name = "btnLoadHistoryItem";
             btnLoadHistoryItem.Size = new Size(63, 35);
             btnLoadHistoryItem.TabIndex = 31;
-            btnLoadHistoryItem.Text = "Lấy lại";
+            btnLoadHistoryItem.Text = "Tải lại";
             btnLoadHistoryItem.UseVisualStyleBackColor = false;
+            btnLoadHistoryItem.Click += btnLoadHistoryItem_Click;
             // 
             // btnDeleteHistoryItem
             // 
@@ -446,17 +440,29 @@
             btnDeleteHistoryItem.TabIndex = 32;
             btnDeleteHistoryItem.Text = "Xóa";
             btnDeleteHistoryItem.UseVisualStyleBackColor = false;
+            btnDeleteHistoryItem.Click += btnDeleteHistoryItem_Click;
+            // 
+            // lbxHistory
+            // 
+            lbxHistory.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            lbxHistory.FormattingEnabled = true;
+            lbxHistory.ItemHeight = 18;
+            lbxHistory.Location = new Point(299, 61);
+            lbxHistory.Name = "lbxHistory";
+            lbxHistory.Size = new Size(298, 238);
+            lbxHistory.TabIndex = 33;
+            lbxHistory.SelectedIndexChanged += lbxHistory_SelectedIndexChanged;
             // 
             // CalculatorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(621, 366);
+            Controls.Add(lbxHistory);
             Controls.Add(btnDeleteHistoryItem);
             Controls.Add(btnLoadHistoryItem);
             Controls.Add(btnDeleteHistory);
             Controls.Add(btnPercent);
-            Controls.Add(lstHistory);
             Controls.Add(label1);
             Controls.Add(txtResult);
             Controls.Add(txtExpresion);
@@ -516,10 +522,10 @@
         private TextBox txtExpresion;
         private TextBox txtResult;
         private Label label1;
-        private ListView lstHistory;
         private Button btnPercent;
         private Button btnDeleteHistory;
         private Button btnLoadHistoryItem;
         private Button btnDeleteHistoryItem;
+        private ListBox lbxHistory;
     }
 }
