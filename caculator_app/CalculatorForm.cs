@@ -48,7 +48,7 @@ namespace Caculator
             if (String.IsNullOrEmpty(c)) return;
 
             // Handle operand
-            if (ArithmeticOperator.IsValid(c))
+            if (Operators.IsValid(c))
             {
                 // Reset operand
                 __calculator.currentOperandStr = "";
@@ -60,7 +60,16 @@ namespace Caculator
                 // Show result in txtResult
                 showTxtResult(__calculator.getExpressionResult().ToString());
             }
-            else if ((c != "(" && c != ")"))
+
+            // Handle ()
+            else if ((c == "(" || c == ")"))
+            {
+                __calculator.polynomialStr += c;
+                __calculator.buildSubExpression(c);
+            }
+
+            // Any thing else
+            else
             {
                 __calculator.currentOperandStr += c;
                 __calculator.polynomialStr += c;
@@ -70,13 +79,6 @@ namespace Caculator
 
                 // Show operand in txtResult
                 showTxtResult(__calculator.currentOperandStr);
-            };
-
-            // Handle ()
-            if (c == "(" || c == ")")
-            {
-                __calculator.polynomialStr += c;
-                __calculator.buildSubExpression(c);
             }
 
             // Show polynomial in txtExpression
@@ -101,7 +103,7 @@ namespace Caculator
         public void calculatePolynomial()
         {
             // Calculate result
-            double? r = __calculator.getResult();
+            decimal r = __calculator.getResult();
 
             // Show result in txtResult
             showTxtResultPlaceHolder();
@@ -202,31 +204,31 @@ namespace Caculator
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            string value = ArithmeticOperator.AdditionOperator;
+            string value = Operators.AdditionOperator;
             inputValue(value);
         }
 
         private void btnSub_Click(object sender, EventArgs e)
         {
-            string value = ArithmeticOperator.SubtractionOperator;
+            string value = Operators.SubtractionOperator;
             inputValue(value);
         }
 
         private void btnMul_Click(object sender, EventArgs e)
         {
-            string value = ArithmeticOperator.MultiplicationOperator;
+            string value = Operators.MultiplicationOperator;
             inputValue(value);
         }
 
         private void btnDiv_Click(object sender, EventArgs e)
         {
-            string value = ArithmeticOperator.DivisionOperator;
+            string value = Operators.DivisionOperator;
             inputValue(value);
         }
 
         private void btnPercent_Click(object sender, EventArgs e)
         {
-            string value = ArithmeticOperator.ModOperator;
+            string value = Operators.ModOperator;
             inputValue(value);
         }
 

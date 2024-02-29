@@ -6,46 +6,6 @@ using System.Threading.Tasks;
 
 namespace Caculator.classes
 {
-    public static class ArithmeticOperator
-    {
-        public const string AdditionOperator = "+";
-        public const string SubtractionOperator = "-";
-        public const string MultiplicationOperator = "x";
-        public const string DivisionOperator = "/";
-        public const string ModOperator = "%";
-
-        static public bool IsValid(string c)
-        {
-            switch (c)
-            {
-                case ArithmeticOperator.AdditionOperator:
-                case ArithmeticOperator.SubtractionOperator:
-                case ArithmeticOperator.MultiplicationOperator:
-                case ArithmeticOperator.DivisionOperator:
-                case ArithmeticOperator.ModOperator:
-                    {
-                        return true;
-                    }
-                default:
-                    return false;
-            };
-        }
-
-        static public bool IsMorePrecedence(string c)
-        {
-            switch (c)
-            {
-                case ArithmeticOperator.MultiplicationOperator:
-                case ArithmeticOperator.DivisionOperator:
-                case ArithmeticOperator.ModOperator:
-                    {
-                        return true;
-                    }
-                default:
-                    return false;
-            };
-        }
-    }
 
     public class Expression
     {
@@ -54,16 +14,17 @@ namespace Caculator.classes
 
         private string __operator = "";
 
+        // Setters
         public void setOperand(double a)
         {
-            if (ArithmeticOperator.IsValid(__operator) && __operandB == null)
+            if (Operators.IsValid(__operator) && __operandB == null)
                 setOperandB(a);
             else if(__operandA == null)
                 setOperandA(a);
         }
         public void setOperand(string a)
         {
-            if (ArithmeticOperator.IsValid(__operator) && __operandB == null)
+            if (Operators.IsValid(__operator) && __operandB == null)
                 setOperandB(a);
             else if (__operandA == null)
                 setOperandA(a);
@@ -85,20 +46,46 @@ namespace Caculator.classes
             __operandB = double.Parse(b);
         }
         public void setOperator(string o) { __operator = o; }
-        public string getOperator() { return __operator; }
 
+        // Getters
+        public string getOperator() { return __operator; }
+        public double? getOperandA() { return __operandA; }
+        public double? getOperandB() { return __operandB; }
+
+        /// <summary>
+        /// Use this method to get the "complete" status of an expression.
+        /// An expression is complete when it has 2 operands and operator.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if expression has 2 operands and operator.
+        /// <see langword="false"/> if expression lack 1 or 2 operands or operator then return false</returns>
         public bool isComplete()
         {
-            if (ArithmeticOperator.IsValid(__operator)) return true;
-
-            bool checkA = __operandA != null, checkB = __operandB != null;
-
-            return checkA && checkB;
+            return (__operandA != null) && (__operandB != null) && Operators.IsValid(__operator);
         }
 
+        /// <summary>
+        /// Use the method to compare precedent betwwee 2 expression.
+        /// If 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns>
+        ///     <see langword="true"/> if this expression has higher "precedent value".
+        ///     <see langword="false"/> if this expression has equal or less than  "precedent value" then return false
+        /// </returns>
+        public bool isMorePrecedentThan(Expression e)
+        {
+            return Operators.GetPrecedentValue(__operator) > Operators.GetPrecedentValue(e.getOperator());
+        }
+
+        /// <summary>
+        /// Use this method to check if this expression is bridge.
+        /// An expression is bridge when it only has operator.
+        /// </summary>
+        /// <returns></returns>
         public bool isBridge()
         {
-            return __operandA == null && __operandB == null && __operator != "";
+            return (__operandA == null) && (__operandB == null) && Operators.IsValid(__operator);
         }
 
         public string getExpressionStr()
@@ -115,7 +102,7 @@ namespace Caculator.classes
         {
             double resultA = 0, resultB = 0;
 
-            if (ArithmeticOperator.IsMorePrecedence(__operator))
+            if (Operators.GetPrecedentValue(__operator) >= 1)
             {
                 resultA = 0;
                 resultB = 1;
@@ -127,27 +114,27 @@ namespace Caculator.classes
 
             switch (__operator)
             {
-                case ArithmeticOperator.SubtractionOperator:
-                    {
-                        return resultA - resultB;
-                    }
-                case ArithmeticOperator.MultiplicationOperator:
-                    {
-                        return resultA * resultB;
-                    }
-                case ArithmeticOperator.DivisionOperator:
-                    {
-                        return resultA / resultB;
-                    }
-                case ArithmeticOperator.ModOperator:
-                    {
-                        return resultA % resultB;
-                    }
-                case ArithmeticOperator.AdditionOperator:
+                case Operators.SubtractionOperator:
+                {
+                    return resultA - resultB;
+                }
+                case Operators.MultiplicationOperator:
+                {
+                    return resultA * resultB;
+                }
+                case Operators.DivisionOperator:
+                {
+                    return resultA / resultB;
+                }
+                case Operators.ModOperator:
+                {
+                    return resultA % resultB;
+                }
+                case Operators.AdditionOperator:
                 default:
-                    {
-                        return resultA + resultB;
-                    }
+                {
+                    return resultA + resultB;
+                }
             };
         }
     }

@@ -13,7 +13,6 @@ namespace Caculator.classes
         private Expression __expression = new Expression();
         private Expression? __prev;
         private int __depth = 0;
-        private double? __previousOperand;
 
         public double? result;
         public string currentOperandStr = "";
@@ -26,99 +25,75 @@ namespace Caculator.classes
         
         public void buildSubExpression(string s)
         {
+            // Case 3: ()
             // In subexpression
             if (s == ")" && __depth > 0)
             {
+                if (__expression.isComplete())
+                {
+                    __expressions[__depth].Push(__expression);
+                    __expression = new Expression();
+                }
+
                 __prev = null;
                 __depth--;
                 return;
             }
 
+            if (Operators.IsValid(__expression.getOperator())) __expressions[__depth].Push(__expression);
+
             __depth++;
             __expressions.Add(new Stack<Expression>());
 
-            if (!__expression.isComplete())
-            {
-                __expression = new Expression();
-                return;
-            }
 
-            __expressions[__depth - 1].Push(__expression);
-
-            __prev = __expression;
+            __prev = null;
             __expression = new Expression();
-        }
-
-        public void buildPrecedentOperatorExpression(string s)
-        {
-            if(__prev != null && !ArithmeticOperator.IsMorePrecedence(__prev.getOperator()))
-            {
-                // Set operandB of previous expression to null
-                __prev.setOperandB();
-
-                // Create new expression
-                __expression = new Expression();
-                __expression.setOperandA(__previousOperand);
-                __expression.setOperator(s);
-                return;
-            }
-
-            // Previous expressions must be computed before add new expression.
-            __expression.setOperator(s);
-
-            if (__expressions[__depth].Count == 0) return;
-            if (__prev != null && ArithmeticOperator.IsMorePrecedence(__prev.getOperator()))
-            {
-                __expression.setOperandA(__prev.getResult());
-                __expressions[__depth].Pop();
-                return;
-            }
-
-            // Expression must be a bridge
-            Expression temp = getExpressionInCurrentDepth(__depth + 1);
-            __expression.setOperandA(temp.getResult());
-
-            return;
         }
 
         public void buildExpression(string s)
         {
-            // If s is operator
-            // 1. Maybe *, /, %
-            if(ArithmeticOperator.IsMorePrecedence(s))
+            // Case 1: If s is number.
+            if (!Operators.IsValid(s))
             {
-                buildPrecedentOperatorExpression(s);
-                return;
-            }
-
-            // 2. Maybe +, -.
-            // +, - operator must be in low precedence.
-            // That means these operators are not in ()
-            if(ArithmeticOperator.IsValid(s))
-            {
-                __expression.setOperator(s);
-
-                // If expression is not a bridge, then terminate the process
-                if (!__expression.isBridge()) return;
-
-                // else caclulate them, assign to operandA of __epxression.
-                Expression temp = getExpressionInCurrentDepth();
-                __expression.setOperandA(temp.getResult());
+                if (Operators.IsValid(__expression.getOperator())) __expression.setOperandB(s);
+                else __expression.setOperandA(s);
 
                 return;
             }
 
-            // If s is number
-            __expression.setOperand(s);
-            __previousOperand = double.Parse(s);
-
-            // If expression is complete
-            if (__expression.isComplete())
+            // Case 2: operator
+            // When user input a operator, that mean they are sure about the expression that is inputted before.
+            if(__expression.isComplete())
             {
                 __expressions[__depth].Push(__expression);
                 __prev = __expression;
                 __expression = new Expression();
             }
+
+            __expression.setOperator(s);
+
+            if (__prev != null && __expression.isMorePrecedentThan(__prev))
+            {
+                double? operandB = __prev.getOperandB();
+                __expression.setOperandA(operandB);
+                __prev.setOperandB();
+                return;
+            }
+
+            if (__prev != null && !__expression.isMorePrecedentThan(__prev))
+            {
+                Expression t = getExpressionInCurrentDepth(__depth, __expression);
+                __expression.setOperandA(t.getResult());
+                return;
+            }
+
+            // If expression is not bridge
+            if (!__expression.isBridge()) return;
+
+            // Get the expression at current depth, then assign its result to operanA of __expression.
+            Expression temp = getExpressionInCurrentDepth(__depth, __expression);
+            __expression.setOperandA(temp.getResult());
+            return;
         }
 
         /// <summary>
@@ -127,11 +102,12 @@ namespace Caculator.classes
         /// the compution will be operated until reach the current depth.
         /// </summary>
         /// <returns>An expression of current depth.</returns>
-        public Expression getExpressionInCurrentDepth(int depth = -1)
+        public Expression getExpressionInCurrentDepth(int depth = -1, Expression? e = null)
         {
             double result = 0;
             int N = __expressions.Count;
             Expression temp = new Expression();
+            Expression prev = new Expression();
 
             depth = (depth == -1) ? __depth : depth;
 
@@ -140,8 +116,19 @@ namespace Caculator.classes
                 while (__expressions[i].Count > 0)
                 {
                     temp = __expressions[i].Pop();
+
+                    if (!Operators.IsValid(temp.getOperator())) continue;
+
+                    // If current expression is less precedent than e, stop compute
+                    if (e != null && e.isMorePrecedentThan(temp) && i == depth)
+                    {
+                        __expressions[i].Push(temp);
+                        return prev;
+                    };
+
                     temp.setOperand(result);
                     result = temp.getResult();
+                    prev = temp;
                 }
 
                 // If depth is less than numbers of calculation stack list elements, then
@@ -157,9 +144,9 @@ namespace Caculator.classes
         /// from calculation stack list.
         /// </summary>
         /// <returns>A result of calculation stack list.</returns>
-        public double? getResult()
+        public decimal getResult()
         {
-
+            if (Operators.IsValid(__expression.getOperator())) __expressions[__depth].Push(__expression);
             if (result == null)
             {
                 __depth = 0;
@@ -169,7 +156,7 @@ namespace Caculator.classes
 
             result = __expression.getResult();
 
-            return result;
+            return Math.Round((decimal)result, 2);
         }
 
         /// <summary>
@@ -207,7 +194,6 @@ namespace Caculator.classes
             __prev = null;
 
             __depth = 0;
-            __previousOperand = null;
 
             result = null;
             currentOperandStr = "";

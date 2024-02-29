@@ -352,10 +352,9 @@
             txtPolynomial.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point);
             txtPolynomial.Location = new Point(24, 30);
             txtPolynomial.Margin = new Padding(3, 2, 3, 2);
-            txtPolynomial.Multiline = true;
             txtPolynomial.Name = "txtPolynomial";
             txtPolynomial.ReadOnly = true;
-            txtPolynomial.Size = new Size(269, 32);
+            txtPolynomial.Size = new Size(269, 26);
             txtPolynomial.TabIndex = 24;
             txtPolynomial.TextAlign = HorizontalAlignment.Right;
             // 
@@ -365,10 +364,9 @@
             txtResult.Font = new Font("Arial", 24F, FontStyle.Bold, GraphicsUnit.Point);
             txtResult.Location = new Point(24, 60);
             txtResult.Margin = new Padding(3, 2, 3, 2);
-            txtResult.Multiline = true;
             txtResult.Name = "txtResult";
             txtResult.ReadOnly = true;
-            txtResult.Size = new Size(269, 48);
+            txtResult.Size = new Size(269, 44);
             txtResult.TabIndex = 25;
             txtResult.TextAlign = HorizontalAlignment.Right;
             // 
